@@ -1,39 +1,86 @@
-.container {
-   display: grid;
-   grid-template-columns: 50% auto;
-}
 
 .col {
-   padding: 5px;
+   padding: .5%;
+   display: inline-block;
+   vertical-align: top;
+   min-height: 90vh;
 }
 
 .light {
    background: #57b3f1;
 }
+.dark.p{
+
+   vertical-align: middle;
+}
 
 .dark {
+   height: 5%;
    background: #2885c4;
+   text-align:center;
+}
+
+.sidebar {
+   /* height: 490px; */
+   backGround: rgb(66, 202, 243);
+   max-width: 25%;
 }
 
 input.txt {
-   /* border: 0px; */
-   padding: 15px;
-   width: 80%;
-   margin-bottom: 15px;
+   padding: 1%;
+   border: 1%;
+   padding-top: 5%;
+   padding-bottom: 5%;
+   width: 96%;
 }
 
 input.btn {
-   display: block;
+   margin:auto;
+   display: inline-block;
+   margin: 5%;
    background: #a5f883;
    color: #003a61;
    cursor: pointer;
    padding: 15px;
-   border: 0;
 }
 
-.movies {
+.expand {
+   padding-top: 2vh;
+   border: 0;
+   padding-bottom: 20px;
+   text-align: center;
+   margin:auto;
+   width: 100%;
+   background: #a5f883;
+   color: #003a61;
+   cursor: pointer;
+}
+
+.movies, .lists {
    background: #3fa0e1;
    cursor: pointer;
    padding: 15px;
-   display: block;
+   overflow-wrap: break-word;
+}
+
+.col.movies {
+   width: 50%;
+}
+
+.createMovie {
+   width: 20%;
+}
+
+.screen {
+   overflow: hidden
+}
+
+li {
+   list-style-type: none;
+}
+
+h1 {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
 }

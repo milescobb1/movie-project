@@ -1,27 +1,31 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div class='container dark'>
-  <div class='col'>
-    <p>your movie list</p>
-  </div>
+  <h1>{{currentList}}</h1>
 </div>
-<div class="container light" [@movies]="movies.length">
-  <div class='col'>
-    <ul>
-      <li class='movies' *ngFor = 'let list of listNames' (click) = 'loadList(list)'>
-        {{list}}
-      </li>
-    </ul>
+<div class="container light">
+  <div class = 'col sidebar' [@sidebar]="sidebar.state">
+    <button class = 'expand' (click)="sidebar.toggleState()"> Lists </button> 
+    <div [@lists]="sidebar.state">
+      <form style = 'padding-top: 5px'>
+        <input type='text' class='txt' name='item' placeholder='New List' [(ngModel)] = newList>
+        <input type='submit' class='btn'value = 'Create' (click)='createList()'>
+      </form>
+      <ul>
+        <li class='lists' *ngFor = 'let list of listNames' (click) = 'loadList(list)'>
+          {{list}}
+        </li>
+      </ul>
+    </div>
   </div>
-  <div class='col'>
+  <div class='col createMovie' *ngIf="currentList">
     <form>
-      <input type='text' class='txt' name='item' placeholder='Movie Title' [(ngModel)] = movie>
-  
-      <input type='submit' class='btn'value = 'add' (click)='addItem()'>
+      <input type='text' class='txt' name='item' placeholder='Movie Title' [(ngModel)] = newMovie>
+      <input type='submit' class='btn'value = 'Add to list' (click)='addMovie()'>
     </form>
   </div>
-  <div class='col'>
+  <div class='col movies'>
     <p class='movies' *ngFor = 'let movie of movies'>
-       {{movie}}
+      {{movie}}
     </p>
   </div>
 </div>
