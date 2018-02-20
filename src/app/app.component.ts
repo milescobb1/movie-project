@@ -124,7 +124,7 @@ export class AppComponent {
       form: {name: name, UID: this.userId },
       json: true
       },
-      (error, res, body) => { console.log(error, res, body); }
+      // (error, res, body) => { console.log(error, res, body); }
     );
     delete this.lists[name];
     remove(this.listNames, lname => lname == name);
