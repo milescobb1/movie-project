@@ -1,7 +1,20 @@
+.movie, .deleteButton {
+   margin-top: 8px;
+   margin-bottom: 8xp;
+}
+
+.errorMessage {
+   display:inline-block;
+}
+.errorMessage p {
+   font-size: 12px;
+   color: red;
+   padding-left: 20px;
+}
 
 .col {
    padding: .5%;
-   display: inline-block;
+   float:left;
    vertical-align: top;
    min-height: 90vh;
 }
@@ -9,6 +22,7 @@
 .light {
    background: #57b3f1;
 }
+
 .dark.p{
 
    vertical-align: middle;
@@ -21,33 +35,38 @@
 }
 
 .sidebar {
-   /* height: 490px; */
    backGround: rgb(66, 202, 243);
    max-width: 25%;
 }
 
 input.txt {
    padding: 1%;
-   border: 1%;
-   padding-top: 5%;
-   padding-bottom: 5%;
-   width: 96%;
+   margin-left: 1%;
+   margin-top: 0%;
+}
+
+.sidebar p {
+   cursor: pointer;
+   margin: 0;
 }
 
 input.btn {
-   margin:auto;
-   display: inline-block;
-   margin: 5%;
+   margin: 1%;
+   display: inline;
    background: #a5f883;
    color: #003a61;
    cursor: pointer;
    padding: 15px;
 }
+.sidebar input {
+   padding: 5%;
+   margin: 2%;
+}
 
 .expand {
    padding-top: 2vh;
+   padding-bottom: 2vh;
    border: 0;
-   padding-bottom: 20px;
    text-align: center;
    margin:auto;
    width: 100%;
@@ -56,19 +75,33 @@ input.btn {
    cursor: pointer;
 }
 
+.movie {
+   padding-left: 20px;
+   max-width: 50%;
+   display:inline-block;
+}
+
+.deleteButton {
+   float:right;
+   background: #a5f883;
+   color: #003a61;
+   cursor: pointer;
+   padding: 5px;
+}
+
 .movies, .lists {
    background: #3fa0e1;
-   cursor: pointer;
    padding: 15px;
    overflow-wrap: break-word;
 }
 
-.col.movies {
-   width: 50%;
+.movies {
+   float: none;
 }
 
 .createMovie {
    width: 20%;
+   float: left;
 }
 
 .screen {

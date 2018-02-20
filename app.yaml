@@ -2,8 +2,7 @@ env: flex
 runtime: nodejs
 handlers:
   - url: /
-    static_files: website/index.html
-    upload: website/index.html
-  
-  - url: /
-    static_dir: website
+    static_files: /index.html
+    upload: /index.html
+manual_scaling:
+  instances: 1

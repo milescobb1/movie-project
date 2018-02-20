@@ -1,32 +1,52 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div class='container dark'>
-  <h1>{{currentList}}</h1>
-</div>
-<div class="container light">
-  <div class = 'col sidebar' [@sidebar]="sidebar.state">
-    <button class = 'expand' (click)="sidebar.toggleState()"> Lists </button> 
-    <div [@lists]="sidebar.state">
-      <form style = 'padding-top: 5px'>
-        <input type='text' class='txt' name='item' placeholder='New List' [(ngModel)] = newList>
-        <input type='submit' class='btn'value = 'Create' (click)='createList()'>
-      </form>
+<div> 
+  <google-signin *ngIf="!userId"
+    [clientId]="myClientId"
+    [width]="myWidth"
+    [theme]="myTheme"
+    [scope]="myScope"
+    [longTitle]="myLongTitle"
+    (googleSignInSuccess)="onGoogleSignInSuccess($event)">
+  </google-signin>
+  <div class='container dark' *ngIf="userId">
+    <h1>{{currentList}}</h1>
+  </div>
+  <div class="container light" *ngIf="userId">
+    <div class = 'col sidebar' [@sidebar]="sidebar.state">
+      <button class = 'expand' (click)="sidebar.toggleState()"> Lists </button> 
+      <div [@lists]="sidebar.state">
+        <form style = 'padding-top: 5px'>
+
+          <input type='text' class='txt' name='item' placeholder='New List' [(ngModel)] = newList>
+          <input type='submit' class='btn create'value = 'Create' (click)='createList()'>
+        </form>
+        <ul>
+          <li class='lists' *ngFor = 'let list of listNames'>
+            <p (click) = 'loadList(list)'>  {{list}} </p>
+            <button (click) = 'deleteList(list)'> delete </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class='col movies'>
+      <form style = 'height:5%'>
+          <input type='text' class='txt' name='item' autocomplete="off" list="suggestions" placeholder="Movie Title" [ngModel] = newMovie (ngModelChange)='textChanged($event)'>
+          <input type='submit' class='btn' value = 'Add to list' (click)='addMovie()'>
+
+          <div class='errorMessage' [@error]="errorMessage"><p> {{errorMessage}} </p></div>
+
+          <datalist id="suggestions">
+              <option *ngFor = 'let suggestion of suggestions' value='{{suggestion.original_title}}'>
+          </datalist>
+        </form>
       <ul>
-        <li class='lists' *ngFor = 'let list of listNames' (click) = 'loadList(list)'>
-          {{list}}
+        <li *ngFor = 'let movie of lists[currentList]'>
+          <p class='movie'>
+            {{movie}}
+          </p>
+          <button *ngIf='editingStatus==done' class='deleteButton' (click) = "deleteMovie(movie)"> delete </button>
         </li>
       </ul>
     </div>
-  </div>
-  <div class='col createMovie' *ngIf="currentList">
-    <form>
-      <input type='text' class='txt' name='item' placeholder='Movie Title' [(ngModel)] = newMovie>
-      <input type='submit' class='btn'value = 'Add to list' (click)='addMovie()'>
-    </form>
-  </div>
-  <div class='col movies'>
-    <p class='movies' *ngFor = 'let movie of movies'>
-      {{movie}}
-    </p>
   </div>
 </div>
 <router-outlet></router-outlet>

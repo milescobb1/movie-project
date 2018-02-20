@@ -1,8 +1,9 @@
-import { Component, Input, Optional } from '@angular/core';
-import { get, post, head } from 'request';
-import {trigger, state, style, animate, transition } from '@angular/animations';
-import { API } from '../config';
-import { environment } from '../environments/environment.prod';
+import { Component, Input, Optional, NgZone } from '@angular/core';
+import { get, post } from 'request';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { API, DB, api_key } from '../config';
+import { uniqBy, remove, trim, map } from 'lodash';
+import { GoogleSignInSuccess } from 'angular-google-signin';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,6 @@ import { environment } from '../environments/environment.prod';
   animations: [
     trigger('sidebar', [
       state('inactive', style({
-        background: "ffff",
         width: '40px'
       })),
       state('active',   style({
@@ -32,73 +32,138 @@ import { environment } from '../environments/environment.prod';
         opacity:'1'
       }))),
       transition('inactive => active', animate('.5s ease-in-out'))
+    ]),
+    trigger('error', [
+      state('none', style({
+        display: 'none'
+      })),
+      transition('* => *', animate('100ms ease-in'))
     ])
   ]
 })
 
 export class AppComponent {
+
+  constructor(private _ngZone: NgZone) {}
+
+  private myClientId: string = '225745065308-le24eciknujgmg86a2n3di4iunse7mar.apps.googleusercontent.com';
+
+  onGoogleSignInSuccess(event: GoogleSignInSuccess, loginState) {
+    let googleUser: gapi.auth2.GoogleUser = event.googleUser;
+    this.userId = googleUser.getId();
+    get({ url: API + 'getAll.php', qs:{'UID':this.userId}}, (error, response, body) => {
+      this._ngZone.run(() => {
+        let res= JSON.parse(body);
+        this.lists = res;
+        this.currentList = Object.keys(res)[0];
+        this.listNames = Object.keys(res);
+      });
+    });
+  }
+  errorMessage: string = 'none';
+  userId: string;
   newMovie: string;
   newList: string;
-  movies = [];
+  suggestions = []
   lists = {}
   listNames = []
   currentList: string;
   sidebar = {
-    state: 'inactive',
+    state: 'active',
     toggleState: () => {
       this.sidebar.state = this.sidebar.state == 'active' ? 'inactive' : 'active'
     }
   }
 
-  ngOnInit() {
-    get({ url: API }, (error, response, body) => {
-        console.log(body);
-        let res= JSON.parse(body);
-        this.lists = res;
-        this.currentList = Object.keys(res)[0];
-        this.movies = res[this.currentList];
-        this.listNames = Object.keys(res);
-        console.log(this.lists);
-        console.log(this.movies);
-    });
+  textChanged(event) {
+    this.newMovie = event;
+    if(event.length) {
+      get(DB + event.replace(' ', '%20'), (err, res, body) => {
+        body = JSON.parse(body);
+        this.suggestions = body.errors ? [] : uniqBy(body.results, (res) => res.original_title);
+      })
+    }
   }
 
   loadList(name) {
-    this.movies = [];
-    this.movies = this.lists[name];
     this.currentList = name;
   }
 
   addMovie() {
     if(this.newMovie != null && this.newMovie != '') {
-      this.addtodb();
-      if (this.lists[this.currentList])
-        this.lists[this.currentList].push(this.newMovie)
-      else {
-        this.lists[this.currentList] = [this.newMovie]
-        this.movies = this.lists[this.currentList]
-        this.listNames.push(this.currentList)
+      if(!map(this.suggestions, (entry) => entry.original_title.toLowerCase()).includes(this.newMovie.toLowerCase())) {
+        this.errorMessage = 'Could not find movie';
+        setTimeout(() => this.errorMessage = null, 2000);
+        return;
       }
-      this.newMovie = '';
+      if (map(this.lists[this.currentList], (entry) => entry.toLowerCase()).includes(this.newMovie.toLowerCase())) {
+        this.errorMessage = 'Movie already in list';
+        return;
+      }
+      this.createMovie(this.newMovie);
     }
   }
 
   createList() {
-    head({ url: API, qs: { "name" : this.newList} });
-    this.currentList = this.newList;
-    this.lists[this.newList] = [];
-    this.listNames.push(this.newList);
-    this.movies = [];
-    this.newList = '';
+    if(this.newList != null && this.newList!= '') {
+      post({ 
+        url: API + 'createList.php',
+        form: { "name" : this.newList, 'userId': this.userId },
+        json: true
+      });
+      this.currentList = this.newList;
+      this.lists[this.newList] = [];
+      this.listNames.push(this.newList);
+      this.newList = '';
+    }
   }
 
-  addtodb() {
+  deleteList(name) {
     post({ 
-        url: API,
-        form: {name: this.newMovie,list: this.currentList },
-        json: true
+      url: API + 'deleteList.php',
+      form: {name: name, UID: this.userId },
+      json: true
       },
-      (error, res, stuff) => { console.log(error, stuff, res); }
+      (error, res, body) => { console.log(error, res, body); }
+    );
+    delete this.lists[name];
+    remove(this.listNames, lname => lname == name);
+    this.currentList = this.listNames[0];
+  }
+
+  deleteMovie(event) {
+    post({ 
+      url: API + 'deleteMovie.php',
+      form: {name: event,list: this.currentList, UID: this.userId },
+      json: true
+      },
+      // (error, res, body) => { console.log(error, res, body); }
+    );
+    remove(this.lists[this.currentList], str => str == event);
+  }
+
+  //TODO: add more database information including poster url to put picture in movie list
+  createMovie(name) {
+    let movieId = this.suggestions.filter((entry) => entry.original_title.toLowerCase() == this.newMovie.toLowerCase())[0].id;
+    get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key='+ api_key + '&language=en-US',
+      (error, res, body) => { 
+        body = JSON.parse(body)
+        if (this.lists[this.currentList])
+            this.lists[this.currentList].push(body.original_title)
+          else {
+            this.lists[this.currentList] = [body.original_title]
+            this.listNames.push(this.currentList)
+          }
+          this.suggestions = [];
+          this.newMovie = '';
+        post({
+            url: API + 'createMovie.php',
+            form: {name: body.original_title, list: this.currentList},
+            json: true
+          },
+          // (error, res, body) => { console.log(error, body, res); }
+        );
+      }
     );
   }
 }

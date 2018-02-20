@@ -12,6 +12,9 @@
   },
   "private": true,
   "dependencies": {
+    "typescript": "~2.5.3",
+    "@angular/compiler-cli": "^5.2.0",
+    "@angular/cli": "1.6.7",
     "@angular/animations": "^5.2.4",
     "@angular/common": "^5.2.0",
     "@angular/compiler": "^5.2.0",
@@ -21,15 +24,17 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "angular-google-signin": "^0.1.5",
     "core-js": "^2.4.1",
+    "lodash": "^4.17.5",
+    "md-dialog": "0.0.1-alpha.1",
     "ngx-bootstrap": "^2.0.2",
     "requests": "^0.2.2",
     "rxjs": "^5.5.6",
+    "web-animations-js": "^2.3.1",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {
-    "@angular/cli": "1.6.7",
-    "@angular/compiler-cli": "^5.2.0",
     "@angular/language-service": "^5.2.0",
     "@types/jasmine": "~2.8.3",
     "@types/jasminewd2": "~2.0.2",
@@ -44,7 +49,6 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.1.2",
     "ts-node": "~4.1.0",
-    "tslint": "~5.9.1",
-    "typescript": "~2.5.3"
+    "tslint": "~5.9.1"
   }
 }
