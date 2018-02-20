@@ -40,10 +40,10 @@
         </form>
       <ul>
         <li *ngFor = 'let movie of lists[currentList]'>
-          <p class='movie'>
-            {{movie}}
-          </p>
-          <button *ngIf='editingStatus==done' class='deleteButton' (click) = "deleteMovie(movie)"> delete </button>
+          <a href='{{movie.link}}' class='movie' target='_blank'>
+            {{movie.name}}
+          </a>
+          <button *ngIf='editingStatus==done' class='deleteButton' (click) = "deleteMovie(movie.name)"> delete </button>
         </li>
       </ul>
     </div>

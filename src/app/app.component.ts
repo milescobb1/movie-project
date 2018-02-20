@@ -60,6 +60,7 @@ export class AppComponent {
       });
     });
   }
+
   errorMessage: string = 'none';
   userId: string;
   newMovie: string;
@@ -80,6 +81,7 @@ export class AppComponent {
     if(event.length) {
       get(DB + event.replace(' ', '%20'), (err, res, body) => {
         body = JSON.parse(body);
+        console.log(body);
         this.suggestions = body.errors ? [] : uniqBy(body.results, (res) => res.original_title);
       })
     }
@@ -96,7 +98,7 @@ export class AppComponent {
         setTimeout(() => this.errorMessage = null, 2000);
         return;
       }
-      if (map(this.lists[this.currentList], (entry) => entry.toLowerCase()).includes(this.newMovie.toLowerCase())) {
+      if (map(this.lists[this.currentList], (entry) => entry.name.toLowerCase()).includes(this.newMovie.toLowerCase())) {
         this.errorMessage = 'Movie already in list';
         return;
       }
@@ -139,7 +141,7 @@ export class AppComponent {
       },
       // (error, res, body) => { console.log(error, res, body); }
     );
-    remove(this.lists[this.currentList], str => str == event);
+    remove(this.lists[this.currentList], entry => entry.name == event);
   }
 
   //TODO: add more database information including poster url to put picture in movie list
@@ -149,7 +151,7 @@ export class AppComponent {
       (error, res, body) => { 
         body = JSON.parse(body)
         if (this.lists[this.currentList])
-            this.lists[this.currentList].push(body.original_title)
+            this.lists[this.currentList].push({ name: body.original_title, link: body.homepage })
           else {
             this.lists[this.currentList] = [body.original_title]
             this.listNames.push(this.currentList)
@@ -158,7 +160,7 @@ export class AppComponent {
           this.newMovie = '';
         post({
             url: API + 'createMovie.php',
-            form: {name: body.original_title, list: this.currentList},
+            form: {name: body.original_title, link: body.homepage, list: this.currentList},
             json: true
           },
           // (error, res, body) => { console.log(error, body, res); }
