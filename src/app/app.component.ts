@@ -93,6 +93,11 @@ export class AppComponent {
 
   addMovie() {
     if(this.newMovie != null && this.newMovie != '') {
+      if(!this.currentList) {
+        this.errorMessage = "Please select or create a list";
+        setTimeout(() => this.errorMessage = null, 2000);
+        return;
+      }
       if(!map(this.suggestions, (entry) => entry.original_title.toLowerCase()).includes(this.newMovie.toLowerCase())) {
         this.errorMessage = 'Could not find movie';
         setTimeout(() => this.errorMessage = null, 2000);
